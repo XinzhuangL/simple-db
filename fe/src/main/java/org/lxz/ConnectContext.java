@@ -100,7 +100,7 @@ public class ConnectContext {
             if (delta > Config.connection_wait_timeout_milliseconds) {
                 // Need kill this connection.
                 // todo print mysqlChannel name  and timeout config
-                System.out.println("kill wait timeout connection, remote: {}, wait timeout: {}");
+                System.out.println("kill wait timeout connection, remote, wait timeout");
                 killFlag = true;
                 killConnection = true;
             }
