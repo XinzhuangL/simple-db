@@ -23,12 +23,15 @@ public class MysqlProto {
             System.out.println("user is empty");
             return false;
         }
+        // todo real check randomString
 
         String remoteIp = context.getMysqlChannel().getRemoteIp();
         // use new privilege
         // todo return true now
-        return true;
+        return MockUser.checkPassword(user, remoteIp, scramble, randomString);
     }
+
+
 
     // send response packet(ok/EOF/ERR).
     // before call this function, should set information in state of ConnectContext
