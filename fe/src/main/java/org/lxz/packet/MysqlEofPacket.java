@@ -5,13 +5,13 @@ import org.lxz.MysqlSerializer;
 import org.lxz.QueryState;
 
 // MySQL protocol EOF packet
-public class EofPacket extends MysqlPacket {
+public class MysqlEofPacket extends MysqlPacket {
 
     private static final int EOF_INDICATOR = 0xFE;
     private static final int WARNINGS = 0;
     private int serverStatus = 0;
 
-    public EofPacket(QueryState state) {
+    public MysqlEofPacket(QueryState state) {
         this.serverStatus = state.serverStatus;
     }
 

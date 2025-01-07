@@ -1,10 +1,12 @@
 package org.lxz;
 
+import org.lxz.common.ScalarType;
+import org.lxz.common.Type;
+import org.lxz.packet.MysqlEofPacket;
 import org.lxz.packet.MysqlPacket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousCloseException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -16,6 +18,10 @@ public class ConnectProcessor {
     private ByteBuffer packetBuf;
 
     // stmt executor
+
+    public static final String INIT_STMT= "select @@version_comment limit 1";
+
+    public static final String INIT_STMT2= "select $$";
 
     public ConnectProcessor(ConnectContext ctx) {
         this.ctx = ctx;
@@ -90,7 +96,7 @@ public class ConnectProcessor {
         return serializer.toByteBuffer();
     }
 
-    private void dispatch() {
+    private void dispatch() throws IOException {
         int code = packetBuf.get();
         MysqlCommand command = MysqlCommand.fromCode(code);
         if (command == null) {
@@ -135,7 +141,7 @@ public class ConnectProcessor {
     }
 
     // process COM_QUERY statement
-    private void handleQuery() {
+    private void handleQuery() throws IOException {
         // convert statement to java string
         String originStmt = null;
         byte[] bytes = packetBuf.array();
@@ -145,6 +151,41 @@ public class ConnectProcessor {
         }
         originStmt = new String(bytes, 1, ending, StandardCharsets.UTF_8);
         System.out.println("we exec " + originStmt + "\n");
+
+        if (originStmt.equals(INIT_STMT) || originStmt.equals(INIT_STMT2)) {
+            return;
+        }
+        // send result
+        ctx.getMysqlChannel().reset();
+        sendOneColumn();
+        ctx.getMysqlSerializer().reset();
+        ctx.getMysqlChannel().sendOnePacket(ByteBuffer.wrap("\u0012Customer#000000010".getBytes()));
+        ctx.getState().setEof();
+
+    }
+
+    // send fields there
+    private void sendOneColumn() throws IOException {
+        MysqlSerializer serializer = ctx.getMysqlSerializer();
+        MysqlChannel mysqlChannel = ctx.getMysqlChannel();
+
+
+        serializer.reset();
+        serializer.writeVInt(1);
+        mysqlChannel.sendOnePacket(serializer.toByteBuffer());
+
+        // write one
+        serializer.reset();
+        serializer.writeField("c_name", ScalarType.createVarcharType(25));
+        mysqlChannel.sendOnePacket(serializer.toByteBuffer());
+
+        // send EOF
+        serializer.reset();
+        MysqlEofPacket eofPacket =  new MysqlEofPacket(ctx.getState());
+        // write to
+        eofPacket.writeTo(serializer);
+
+        mysqlChannel.sendOnePacket(serializer.toByteBuffer());
     }
 
 

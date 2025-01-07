@@ -1,10 +1,10 @@
 package org.lxz;
 
 import com.google.common.collect.ImmutableMap;
-import org.lxz.packet.EofPacket;
+import org.lxz.packet.MysqlEofPacket;
+import org.lxz.packet.MysqlPacket;
 import org.lxz.packet.MysqlErrPacket;
 import org.lxz.packet.MysqlOkPacket;
-import org.lxz.packet.MysqlPacket;
 
 // query state used to record state of query, maybe query status is better
 public class QueryState {
@@ -134,7 +134,7 @@ public class QueryState {
                  packet = new MysqlOkPacket(this);
                  break;
             case EOF:
-                packet = new EofPacket(this);
+                packet = new MysqlEofPacket(this);
                 break;
             case ERR:
                 packet = new MysqlErrPacket(this);

@@ -1,5 +1,7 @@
 package org.lxz;
 
+import org.lxz.common.Type;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -127,7 +129,41 @@ public class MysqlSerializer {
 
     // writeField Column
 
-    // writeField Type
+    /**
+     * Format field with name and type using Protocol:ColumnDefinition41
+     * https://dev.mysql.com/doc/internals/en/com-query-response.html#column-definition
+     *
+     */
+    public void writeField(String colName, Type type) {
+
+        // GlobalStateMgr Name: length encoded string
+        writeLenEncodedString("def");
+        // Schema: length encoded string
+        writeLenEncodedString("");
+        // Table: length encoded string
+        writeLenEncodedString("");
+        // Origin Table: length encoded string
+        writeLenEncodedString("");
+        // Name: length encoded string
+        writeLenEncodedString(colName);
+        // Original Name: length encoded string
+        writeLenEncodedString(colName);
+        // length of the following fields(always 0x0c)
+        writeVInt(0x0c);
+        // Character set: two byte integer
+        writeInt2(type.getMysqlResultSetFieldCharsetIndex());
+        // Column length: four byte integer
+        writeInt4(type.getMysqlResultSetFieldLength());
+        // Column type: one byte integer
+        writeInt1(type.getMysqlResultType().getCode());
+        // Flags: two byte integer
+        writeInt2(0);
+        // Decimals: one byte integer
+        writeInt1(type.getMysqlResultSetFieldDecimals());
+        // filler: two byte integer
+        writeInt2(0);
+
+    }
 
 
 
