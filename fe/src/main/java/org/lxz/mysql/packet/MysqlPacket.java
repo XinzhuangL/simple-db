@@ -1,6 +1,6 @@
-package org.lxz.packet;
+package org.lxz.mysql.packet;
 
-import org.lxz.MysqlSerializer;
+import org.lxz.mysql.server.MysqlSerializer;
 
 import java.nio.ByteBuffer;
 

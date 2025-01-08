@@ -1,9 +1,11 @@
 package org.lxz;
 
 import org.lxz.common.ScalarType;
-import org.lxz.common.Type;
-import org.lxz.packet.MysqlEofPacket;
-import org.lxz.packet.MysqlPacket;
+import org.lxz.mysql.packet.MysqlEofPacket;
+import org.lxz.mysql.packet.MysqlPacket;
+import org.lxz.mysql.server.MysqlChannel;
+import org.lxz.mysql.server.MysqlCommand;
+import org.lxz.mysql.server.MysqlSerializer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -159,7 +161,8 @@ public class ConnectProcessor {
         ctx.getMysqlChannel().reset();
         sendOneColumn();
         ctx.getMysqlSerializer().reset();
-        ctx.getMysqlChannel().sendOnePacket(ByteBuffer.wrap("\u0012Customer#000000010".getBytes()));
+        ctx.getMysqlSerializer().writeLenEncodedString("Customer#000000010");
+        ctx.getMysqlChannel().sendOnePacket(ctx.getMysqlSerializer().toByteBuffer());
         ctx.getState().setEof();
 
     }

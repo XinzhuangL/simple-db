@@ -1,9 +1,9 @@
-package org.lxz.packet;
+package org.lxz.mysql.packet;
 
-import org.lxz.ErrorCode;
-import org.lxz.MysqlCapability;
-import org.lxz.MysqlSerializer;
-import org.lxz.QueryState;
+import org.lxz.common.ErrorCode;
+import org.lxz.mysql.server.MysqlCapability;
+import org.lxz.mysql.server.MysqlSerializer;
+import org.lxz.common.QueryState;
 
 // MySQL protocol err packet
 public class MysqlErrPacket extends MysqlPacket {

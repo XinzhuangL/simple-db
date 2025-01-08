@@ -1,10 +1,10 @@
-package org.lxz.packet;
+package org.lxz.mysql.packet;
 
 import com.google.common.collect.ImmutableMap;
-import org.lxz.Config;
-import org.lxz.MysqlCapability;
-import org.lxz.MysqlPassword;
-import org.lxz.MysqlSerializer;
+import org.lxz.common.Config;
+import org.lxz.mysql.server.MysqlCapability;
+import org.lxz.mysql.server.MysqlPassword;
+import org.lxz.mysql.server.MysqlSerializer;
 
 // MySQL protocol handshake packet.
 public class MysqlHandshakePacket extends MysqlPacket {

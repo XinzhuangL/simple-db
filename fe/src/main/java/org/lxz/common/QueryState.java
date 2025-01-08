@@ -1,10 +1,10 @@
-package org.lxz;
+package org.lxz.common;
 
 import com.google.common.collect.ImmutableMap;
-import org.lxz.packet.MysqlEofPacket;
-import org.lxz.packet.MysqlPacket;
-import org.lxz.packet.MysqlErrPacket;
-import org.lxz.packet.MysqlOkPacket;
+import org.lxz.mysql.packet.MysqlEofPacket;
+import org.lxz.mysql.packet.MysqlPacket;
+import org.lxz.mysql.packet.MysqlErrPacket;
+import org.lxz.mysql.packet.MysqlOkPacket;
 
 // query state used to record state of query, maybe query status is better
 public class QueryState {

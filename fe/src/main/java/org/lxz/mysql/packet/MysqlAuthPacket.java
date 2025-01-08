@@ -1,9 +1,9 @@
-package org.lxz.packet;
+package org.lxz.mysql.packet;
 
 import com.google.common.collect.Maps;
-import org.lxz.MysqlCapability;
-import org.lxz.MysqlProto;
-import org.lxz.MysqlSerializer;
+import org.lxz.mysql.server.MysqlCapability;
+import org.lxz.mysql.server.MysqlProto;
+import org.lxz.mysql.server.MysqlSerializer;
 
 import java.nio.ByteBuffer;
 import java.util.Map;

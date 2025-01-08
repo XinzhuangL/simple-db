@@ -1,4 +1,4 @@
-package org.lxz;
+package org.lxz.mysql.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -42,7 +42,7 @@ public class MysqlChannel {
     protected MysqlChannel() {
         this(null);
     }
-    protected MysqlChannel(SocketChannel channel) {
+    public MysqlChannel(SocketChannel channel) {
         this.closed = false;
         this.sequenceId = 0;
         this.isSend = false;

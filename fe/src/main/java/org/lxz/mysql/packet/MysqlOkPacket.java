@@ -1,9 +1,9 @@
-package org.lxz.packet;
+package org.lxz.mysql.packet;
 
 import com.google.common.base.Strings;
-import org.lxz.MysqlCapability;
-import org.lxz.MysqlSerializer;
-import org.lxz.QueryState;
+import org.lxz.mysql.server.MysqlCapability;
+import org.lxz.mysql.server.MysqlSerializer;
+import org.lxz.common.QueryState;
 
 // MySQL protocol OK packet
 public class MysqlOkPacket extends MysqlPacket {

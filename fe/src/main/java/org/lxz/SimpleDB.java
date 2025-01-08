@@ -1,5 +1,7 @@
 package org.lxz;
 
+import org.lxz.common.Config;
+
 public class SimpleDB {
 
     public static void main(String[] args) throws InterruptedException {

@@ -1,8 +1,7 @@
-package org.lxz;
+package org.lxz.mysql.server;
 
 import com.google.common.collect.Maps;
 
-import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.Map;
 

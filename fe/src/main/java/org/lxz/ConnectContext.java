@@ -1,5 +1,12 @@
 package org.lxz;
 
+import org.lxz.common.Config;
+import org.lxz.common.QueryState;
+import org.lxz.mysql.server.MysqlCapability;
+import org.lxz.mysql.server.MysqlChannel;
+import org.lxz.mysql.server.MysqlCommand;
+import org.lxz.mysql.server.MysqlSerializer;
+
 import java.nio.channels.SocketChannel;
 import java.util.UUID;
 import javax.net.ssl.SSLContext;
@@ -13,7 +20,7 @@ public class ConnectContext {
     protected long startTime = System.currentTimeMillis();
 
     // Command this connection is processing.
-    protected  MysqlCommand command;
+    protected MysqlCommand command;
 
     protected volatile boolean isPending = false;
 
@@ -56,7 +63,7 @@ public class ConnectContext {
     protected QueryState state;
 
     // mysql net
-    protected  MysqlChannel mysqlChannel;
+    protected MysqlChannel mysqlChannel;
 
     protected MysqlSerializer mysqlSerializer;
 

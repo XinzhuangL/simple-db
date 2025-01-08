@@ -1,4 +1,4 @@
-package org.lxz;
+package org.lxz.common;
 
 /**
  * A Simple Config contains some static config

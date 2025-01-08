@@ -19,7 +19,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.lxz;
+package org.lxz.mysql.server;
 
 import java.util.EnumSet;
 

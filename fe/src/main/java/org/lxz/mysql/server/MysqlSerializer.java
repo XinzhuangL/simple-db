@@ -1,4 +1,4 @@
-package org.lxz;
+package org.lxz.mysql.server;
 
 import org.lxz.common.Type;
 

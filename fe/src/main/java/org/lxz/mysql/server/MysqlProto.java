@@ -1,14 +1,15 @@
-package org.lxz;
+package org.lxz.mysql.server;
 
 import com.google.common.base.Strings;
-import org.lxz.packet.MysqlAuthPacket;
-import org.lxz.packet.MysqlHandshakePacket;
-import org.lxz.packet.MysqlPacket;
+import org.lxz.ConnectContext;
+import org.lxz.mysql.packet.MysqlAuthPacket;
+import org.lxz.mysql.packet.MysqlHandshakePacket;
+import org.lxz.mysql.packet.MysqlPacket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static org.lxz.packet.MysqlHandshakePacket.AUTHENTICATION_KERBEROS_CLIENT;
+import static org.lxz.mysql.packet.MysqlHandshakePacket.AUTHENTICATION_KERBEROS_CLIENT;
 
 // MySQL protocol util
 public class MysqlProto {

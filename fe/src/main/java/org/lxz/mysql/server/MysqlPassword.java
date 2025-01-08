@@ -1,4 +1,4 @@
-package org.lxz;
+package org.lxz.mysql.server;
 
 import com.google.common.base.Strings;
 

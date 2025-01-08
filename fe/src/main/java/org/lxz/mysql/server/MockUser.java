@@ -1,8 +1,6 @@
-package org.lxz;
+package org.lxz.mysql.server;
 
 import com.google.common.collect.ImmutableMap;
-
-import java.util.Objects;
 
 public class MockUser {
 
