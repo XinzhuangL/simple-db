@@ -2,6 +2,7 @@ package org.lxz.mysql.server;
 
 import com.google.common.base.Strings;
 import org.lxz.ConnectContext;
+import org.lxz.common.NegotiateState;
 import org.lxz.mysql.packet.MysqlAuthPacket;
 import org.lxz.mysql.packet.MysqlHandshakePacket;
 import org.lxz.mysql.packet.MysqlPacket;
@@ -241,8 +242,6 @@ public class MysqlProto {
         buffer.get();
         return buf;
     }
-
-
 
 
 }

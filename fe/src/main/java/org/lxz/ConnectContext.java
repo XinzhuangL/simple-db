@@ -72,6 +72,17 @@ public class ConnectContext {
 
     protected SSLContext sslContext;
 
+    protected String remoteIP;
+
+    private ConnectContext parent;
+
+    public ConnectContext() {
+        this(null, null);
+    }
+
+    public ConnectContext(SocketChannel channel) {
+        this(channel, null);
+    }
 
     public ConnectContext(SocketChannel channel, SSLContext sslContext) {
         closed = false;
@@ -160,6 +171,11 @@ public class ConnectContext {
         }
     }
 
+    public boolean isKilled() {
+        return (parent != null && parent.isKilled()) || isKilled;
+    }
+
+
     // Set kill flag to true;
     public void setKilled() {
         isKilled = true;
@@ -179,6 +195,10 @@ public class ConnectContext {
 
     public void setThreadLocalInfo() {
         threadLocalInfo.set(this);
+    }
+
+    public static void remove() {
+        threadLocalInfo.remove();
     }
 
     public void setConnectScheduler(ConnectScheduler connectScheduler) {

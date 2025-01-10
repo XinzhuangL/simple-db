@@ -1,6 +1,7 @@
 package org.lxz;
 
 import org.lxz.mysql.server.MysqlServer;
+import org.lxz.mysql.server.nio.NMysqlServer;
 
 import javax.net.ssl.SSLContext;
 
@@ -13,9 +14,8 @@ public class QeService {
     public QeService(int port, boolean nioEnabled, ConnectScheduler scheduler) {
         SSLContext sslContext = null;
 
-        // todo create here
         if (nioEnabled) {
-            // todo not impl
+            mysqlServer = new NMysqlServer(port, scheduler, sslContext);
         } else {
             mysqlServer = new MysqlServer(port, scheduler, sslContext);
         }

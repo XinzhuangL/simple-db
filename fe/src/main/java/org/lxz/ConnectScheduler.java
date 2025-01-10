@@ -77,7 +77,10 @@ public class ConnectScheduler {
         context.resetConnectionStartTime();
 
         // no necessary for nio
-        // todo noimpl nio
+        if (context instanceof NConnectContext) {
+            return true;
+        }
+
 
         if (executor.submit(new LoopHandler(context)) == null) {
             System.out.println("Submit one thread failed.");
