@@ -26,4 +26,7 @@ public class Config {
 
     public static String mysql_server_version = "5.1.0";
 
+    public static final Integer parse_tokens_limit = 3500000;
+    public static final Integer expr_children_limit = 10000;
+
 }

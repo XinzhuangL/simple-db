@@ -6,10 +6,14 @@ import org.lxz.mysql.packet.MysqlPacket;
 import org.lxz.mysql.server.MysqlChannel;
 import org.lxz.mysql.server.MysqlCommand;
 import org.lxz.mysql.server.MysqlSerializer;
+import org.lxz.sql.ast.StatementBase;
+import org.lxz.sql.parser.SqlParser;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Process one mysql connection, receive one packet, process, send one packet.
@@ -21,9 +25,9 @@ public class ConnectProcessor {
 
     // stmt executor
 
-    public static final String INIT_STMT= "select @@version_comment limit 1";
+    public static final String INIT_STMT = "select @@version_comment limit 1";
 
-    public static final String INIT_STMT2= "select $$";
+    public static final String INIT_STMT2 = "select $$";
 
     public ConnectProcessor(ConnectContext ctx) {
         this.ctx = ctx;
@@ -58,7 +62,6 @@ public class ConnectProcessor {
         finalizeCommand();
 
         ctx.setCommand(MysqlCommand.COM_SLEEP);
-
 
     }
 
@@ -157,21 +160,32 @@ public class ConnectProcessor {
         if (originStmt.equals(INIT_STMT) || originStmt.equals(INIT_STMT2)) {
             return;
         }
-        // send result
-        ctx.getMysqlChannel().reset();
-        sendOneColumn();
-        ctx.getMysqlSerializer().reset();
-        ctx.getMysqlSerializer().writeLenEncodedString("Customer#000000010");
-        ctx.getMysqlChannel().sendOnePacket(ctx.getMysqlSerializer().toByteBuffer());
-        ctx.getState().setEof();
+         // send result
 
+        StatementBase parsedStmt = null;
+        try {
+            ctx.setQueryId(UUID.randomUUID());
+            List<StatementBase> stmts;
+
+            stmts = SqlParser.parse(originStmt);
+            System.out.println(stmts.size());
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            ctx.getMysqlChannel().reset();
+            sendOneColumn();
+            ctx.getMysqlSerializer().reset();
+            ctx.getMysqlSerializer().writeLenEncodedString("Customer#000000010");
+            ctx.getMysqlChannel().sendOnePacket(ctx.getMysqlSerializer().toByteBuffer());
+            ctx.getState().setEof();
+        }
     }
 
     // send fields there
     private void sendOneColumn() throws IOException {
         MysqlSerializer serializer = ctx.getMysqlSerializer();
         MysqlChannel mysqlChannel = ctx.getMysqlChannel();
-
 
         serializer.reset();
         serializer.writeVInt(1);
@@ -184,15 +198,12 @@ public class ConnectProcessor {
 
         // send EOF
         serializer.reset();
-        MysqlEofPacket eofPacket =  new MysqlEofPacket(ctx.getState());
+        MysqlEofPacket eofPacket = new MysqlEofPacket(ctx.getState());
         // write to
         eofPacket.writeTo(serializer);
 
         mysqlChannel.sendOnePacket(serializer.toByteBuffer());
     }
-
-
-
 
     public void loop() {
         while (!ctx.isKilled) {
