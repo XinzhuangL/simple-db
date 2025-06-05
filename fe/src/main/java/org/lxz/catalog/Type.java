@@ -1,4 +1,8 @@
-package org.lxz.common;
+package org.lxz.catalog;
+
+import org.lxz.common.MysqlColType;
+import org.lxz.common.PrimitiveType;
+import org.lxz.common.ScalarType;
 
 // may abstract
 public class Type {

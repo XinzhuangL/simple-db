@@ -1,5 +1,7 @@
 package org.lxz.common;
 
+import org.lxz.catalog.Type;
+
 public class ScalarType extends Type {
 
     private int len = -1;

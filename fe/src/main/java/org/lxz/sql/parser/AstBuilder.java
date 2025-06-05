@@ -1,19 +1,30 @@
 package org.lxz.sql.parser;
 
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.lxz.analysis.Expr;
 import org.lxz.analysis.GroupByClause;
 import org.lxz.analysis.HintNode;
+import org.lxz.analysis.IntLiteral;
 import org.lxz.analysis.ParseNode;
+import org.lxz.analysis.SlotRef;
+import org.lxz.analysis.TableName;
+import org.lxz.sql.ast.Identifier;
+import org.lxz.sql.ast.QualifiedName;
 import org.lxz.sql.ast.QueryRelation;
 import org.lxz.sql.ast.QueryStatement;
 import org.lxz.sql.ast.Relation;
 import org.lxz.sql.ast.SelectList;
 import org.lxz.sql.ast.SelectListItem;
 import org.lxz.sql.ast.SelectRelation;
+import org.lxz.sql.ast.TableRelation;
 import org.lxz.sql.ast.ValuesRelation;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -125,16 +136,105 @@ public class AstBuilder extends StarRocksBaseVisitor<ParseNode> {
         return resultSelectRelation;
     }
 
+    // expression (AS? (identifier | string))?   #selectSingle
     @Override
     public ParseNode visitSelectSingle(StarRocksParser.SelectSingleContext ctx) {
-        // todo
-        return null;
+        String alias = null;
+        // visit identifier later
+        if (ctx.identifier() != null) {
+
+        } else if (ctx.string() != null) {
+
+        }
+        return new SelectListItem((Expr) visit(ctx.expression()), alias, createPos(ctx));
     }
 
     @Override
     public ParseNode visitTableAtom(StarRocksParser.TableAtomContext ctx) {
-        // todo
-        return null;
+        Token start = ctx.getStart();
+        Token stop = ctx.getStop();
+        QualifiedName qualifiedName = getQualifiedName(ctx.qualifiedName());
+        TableName tableName = qualifiedNametoTableName(qualifiedName);
+        // todo PartitionNames
+        // todo tabletIds
+        // todo replicaLists
+
+        TableRelation tableRelation = new TableRelation(tableName, null, null, null, createPos(start, stop));
+        // todo ignore tabletContent
+        // todo ignore bracketHint  table hit
+
+        // alias
+        if (ctx.alias != null) {
+            Identifier identifier = (Identifier) visit(ctx.alias);
+            tableRelation.setAlias(new TableName(null, identifier.getValue()));
+        }
+
+        // temporalClause
+        return tableRelation;
+    }
+
+    // catalog.database.table
+    private TableName qualifiedNametoTableName(QualifiedName qualifiedName) {
+        List<String> parts = qualifiedName.getParts();
+        if (parts.size() == 3) {
+            return new TableName(parts.get(0), parts.get(1), parts.get(2), qualifiedName.getPos());
+        } else if (parts.size() == 2) {
+            return new TableName(null, qualifiedName.getParts().get(0), qualifiedName.getParts().get(1),
+                    qualifiedName.getPos());
+        } else if (parts.size() == 1) {
+            return new TableName(null, null, qualifiedName.getParts().get(0), qualifiedName.getPos());
+        } else {
+            throw new ParsingException(PARSER_ERROR_MSG.invalidTableFormat(qualifiedName.toString()));
+        }
+    }
+
+    private QualifiedName getQualifiedName(StarRocksParser.QualifiedNameContext ctx) {
+        List<String> parts = new ArrayList<>();
+        NodePosition pos = createPos(ctx);
+        for (ParseTree c : ctx.children) {
+            if (c instanceof TerminalNode) {
+                TerminalNode t = (TerminalNode) c;
+                if (t.getSymbol().getType() == StarRocksParser.DOT_IDENTIFIER) {
+                    parts.add(t.getText().substring(1));
+                }
+            } else if (c instanceof StarRocksParser.IdentifierContext) {
+                StarRocksParser.IdentifierContext identifierContext = (StarRocksParser.IdentifierContext) c;
+                Identifier identifier = (Identifier) visit(identifierContext);
+                parts.add(identifier.getValue());
+            }
+        }
+        return QualifiedName.of(parts, pos);
+    }
+
+    @Override
+    public ParseNode visitPredicate(StarRocksParser.PredicateContext ctx) {
+        return super.visitPredicate(ctx);
+    }
+
+    @Override
+    public ParseNode visitColumnReference(StarRocksParser.ColumnReferenceContext ctx) {
+        Identifier identifier = (Identifier) visit(ctx.identifier());
+        List<String> parts = new ArrayList<>();
+        parts.add(identifier.getValue());
+        QualifiedName qualifiedName = QualifiedName.of(parts, createPos(ctx));
+        return new SlotRef(qualifiedName);
+    }
+
+    @Override
+    public ParseNode visitUnquotedIdentifier(StarRocksParser.UnquotedIdentifierContext ctx) {
+        return new Identifier(ctx.getText(), createPos(ctx));
+    }
+
+    @Override
+    public ParseNode visitIntegerValue(StarRocksParser.IntegerValueContext ctx) {
+        NodePosition pos = createPos(ctx);
+        try {
+            BigInteger intLiteral = new BigInteger(ctx.getText());
+            return new IntLiteral(intLiteral.longValue(), pos);
+        } catch (Exception e) {
+            throw new ParsingException(PARSER_ERROR_MSG.invalidNumFormat(ctx.getText()), pos);
+        }
+
     }
 
     // ------------------------------------------- Util Functions -------------------------------------------

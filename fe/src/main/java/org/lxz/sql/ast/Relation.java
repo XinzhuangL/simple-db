@@ -17,4 +17,8 @@ public abstract class Relation implements ParseNode {
     protected Relation(NodePosition pos) {
         this.pos = pos;
     }
+
+    public void setAlias(TableName alias) {
+        this.alias = alias;
+    }
 }

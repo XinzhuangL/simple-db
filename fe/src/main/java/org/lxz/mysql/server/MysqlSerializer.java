@@ -1,6 +1,6 @@
 package org.lxz.mysql.server;
 
-import org.lxz.common.Type;
+import org.lxz.catalog.Type;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
