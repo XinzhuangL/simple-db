@@ -114,4 +114,18 @@ public abstract class Expr extends TreeNode<Expr> implements ParseNode {
         return pos;
     }
 
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    // Whether the expr itself is nullable
+    public boolean isNullable() {
+        return true;
+    }
+
+
 }

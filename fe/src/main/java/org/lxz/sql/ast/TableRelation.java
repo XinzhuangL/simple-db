@@ -51,12 +51,54 @@ public class TableRelation extends Relation {
         this.replicaIds = replicaIds;
     }
 
+    public TableName getName() {
+        return name;
+    }
 
+    public Table getTable() {
+        return table;
+    }
 
+    public List<String> getPruneScanColumns() {
+        return pruneScanColumns;
+    }
 
+    public void setTable(Table table) {
+        this.table = table;
+    }
 
     @Override
     public NodePosition getPos() {
         return null;
+    }
+
+    @Override
+    public TableName getResolveTableName() {
+        if (alias != null) {
+            if (name.getDb() != null) {
+                if (name.getCatalog() != null) {
+                    return new TableName(name.getCatalog(), name.getDb(), alias.getTbl(), name.getPos());
+                } else {
+                    return new TableName(null, name.getDb(), alias.getTbl(), name.getPos());
+                }
+            } else {
+                return alias;
+            }
+        } else {
+            return name;
+        }
+    }
+
+    public void setColumns(Map<Field, Column> columns) {
+        this.columns = columns;
+    }
+
+    @Override
+    public <R, C> R accept(AstVisitor<R, C> visitor, C context) {
+        return visitor.visitTable(this, context);
+    }
+
+    public Map<Field, Column> getColumns() {
+        return columns;
     }
 }

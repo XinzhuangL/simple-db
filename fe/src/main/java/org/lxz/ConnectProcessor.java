@@ -6,6 +6,8 @@ import org.lxz.mysql.packet.MysqlPacket;
 import org.lxz.mysql.server.MysqlChannel;
 import org.lxz.mysql.server.MysqlCommand;
 import org.lxz.mysql.server.MysqlSerializer;
+import org.lxz.qe.OriginStatement;
+import org.lxz.qe.StmtExecutor;
 import org.lxz.sql.ast.StatementBase;
 import org.lxz.sql.parser.SqlParser;
 
@@ -28,6 +30,8 @@ public class ConnectProcessor {
     public static final String INIT_STMT = "select @@version_comment limit 1";
 
     public static final String INIT_STMT2 = "select $$";
+
+    protected StmtExecutor executor = null;
 
     public ConnectProcessor(ConnectContext ctx) {
         this.ctx = ctx;
@@ -168,10 +172,25 @@ public class ConnectProcessor {
             List<StatementBase> stmts;
 
             stmts = SqlParser.parse(originStmt);
+
+            // todo now process first only
+            parsedStmt = stmts.get(0);
+            parsedStmt.setOrigStmt(new OriginStatement(originStmt, 0));
+            executor = new StmtExecutor(ctx, parsedStmt);
+            ctx.setExecutor(executor);
+
+
+            // todo why view need rewrite
+
+
+
+            executor.execute();
+
+
             System.out.println(stmts.size());
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } finally {
             ctx.getMysqlChannel().reset();
             sendOneColumn();

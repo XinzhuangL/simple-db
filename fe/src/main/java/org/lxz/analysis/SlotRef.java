@@ -1,6 +1,8 @@
 package org.lxz.analysis;
 
 import com.google.common.collect.ImmutableList;
+import org.lxz.catalog.Type;
+import org.lxz.sql.ast.AstVisitor;
 import org.lxz.sql.ast.QualifiedName;
 import org.lxz.sql.parser.NodePosition;
 
@@ -16,6 +18,10 @@ public class SlotRef extends Expr {
     private String label;
 
     private QualifiedName qualifiedName;
+
+
+    // results of analysis
+    // protected SlotDescriptor desc;
 
 
 
@@ -85,5 +91,30 @@ public class SlotRef extends Expr {
     @Override
     public NodePosition getPos() {
         return null;
+    }
+
+    public String getColName() {
+        return colName;
+    }
+
+    public TableName getTblNameWithoutAnalyzed() {
+        return tblName;
+    }
+
+    public void setType(Type type) {
+        super.setType(type);
+    }
+
+    public void setTblName(TableName tblName) {
+        this.tblName = tblName;
+    }
+
+    public void setNullable(boolean nullable) {
+        this.nullable = nullable;
+    }
+
+    @Override
+    public <R, C> R accept(AstVisitor<R, C> visitor, C context) {
+        return visitor.visitSlot(this, context);
     }
 }

@@ -16,6 +16,8 @@ public class Type {
     // todo other type
     public static final ScalarType VARCHAR = ScalarType.createVarcharType(-1);
 
+    public static final ScalarType INT = new ScalarType(PrimitiveType.INT);
+
 
 
     public boolean isScalarType() {

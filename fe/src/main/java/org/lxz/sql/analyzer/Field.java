@@ -1,6 +1,8 @@
 package org.lxz.sql.analyzer;
 
+import org.lxz.ConnectContext;
 import org.lxz.analysis.Expr;
+import org.lxz.analysis.SlotRef;
 import org.lxz.analysis.TableName;
 import org.lxz.catalog.Type;
 
@@ -37,4 +39,44 @@ public class Field {
         this.isNullable = isNullable;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean canResolve(SlotRef expr) {
+        // struct
+
+        TableName tableName = expr.getTblNameWithoutAnalyzed();
+        if (tableName != null) {
+            if (relationAlias == null) {
+                return false;
+            }
+            return matchesPrefix(expr.getTblNameWithoutAnalyzed()) && expr.getColName().equalsIgnoreCase(this.name);
+        } else {
+            return expr.getColName().equalsIgnoreCase(this.name);
+        }
+    }
+
+    public boolean matchesPrefix(TableName tableName) {
+        if (tableName.getCatalog() != null && relationAlias.getCatalog() != null &&
+        !tableName.getCatalog().equals(relationAlias.getCatalog())) {
+            return false;
+        }
+        if (tableName.getDb() != null && !tableName.getDb().equals(relationAlias.getDb())) {
+            return false;
+        }
+        return tableName.getTbl().equalsIgnoreCase(relationAlias.getTbl());
+    }
+
+    public TableName getRelationAlias() {
+        return relationAlias;
+    }
+
+    public boolean isNullable() {
+        return isNullable;
+    }
 }

@@ -6,6 +6,7 @@ import org.lxz.mysql.server.MysqlCapability;
 import org.lxz.mysql.server.MysqlChannel;
 import org.lxz.mysql.server.MysqlCommand;
 import org.lxz.mysql.server.MysqlSerializer;
+import org.lxz.qe.StmtExecutor;
 
 import java.nio.channels.SocketChannel;
 import java.util.UUID;
@@ -18,6 +19,9 @@ public class ConnectContext {
 
     // Timestamp in millisecond last command starts at
     protected long startTime = System.currentTimeMillis();
+
+    // set this before analyze
+    protected long stmtId;
 
     // Command this connection is processing.
     protected MysqlCommand command;
@@ -50,6 +54,8 @@ public class ConnectContext {
 
     protected volatile boolean closed;
 
+    protected volatile boolean isForward = false;
+
     // Time when the connection is make
     protected long connectionStartTime;
 
@@ -73,6 +79,8 @@ public class ConnectContext {
     protected SSLContext sslContext;
 
     protected String remoteIP;
+
+    StmtExecutor executor;
 
     private ConnectContext parent;
 
@@ -197,8 +205,25 @@ public class ConnectContext {
         threadLocalInfo.set(this);
     }
 
+    /**
+     * Set this connect to thread-local if not exists
+     * return set or not
+     */
+
+    public boolean setThreadLocalInfoIfNotExists() {
+        if (threadLocalInfo.get() == null) {
+            threadLocalInfo.set(this);
+            return true;
+        }
+        return false;
+    }
+
     public static void remove() {
         threadLocalInfo.remove();
+    }
+
+    public static ConnectContext get() {
+        return threadLocalInfo.get();
     }
 
     public void setConnectScheduler(ConnectScheduler connectScheduler) {
@@ -290,5 +315,53 @@ public class ConnectContext {
     public void setLastQueryId(UUID queryId) {
         this.lastQueryId = queryId;
     }
+
+    public void setExecutor(StmtExecutor executor) {
+        this.executor = executor;
+    }
+
+    public long getStmtId() {
+        return stmtId;
+    }
+
+    public void setStmtId(long stmtId) {
+        this.stmtId = stmtId;
+    }
+
+    public void setIsForward(boolean forward) {
+        isForward = forward;
+    }
+
+    public boolean isForward() {
+        return isForward;
+    }
+
+    public ScopeGuard bindScope() {
+        return ScopeGuard.setIfNotExists(this);
+    }
+
+    /**
+     * Set thread-local context for the scope, and remove it after leaving the scope
+     */
+    public static class ScopeGuard implements AutoCloseable {
+
+        private boolean set = false;
+        protected ScopeGuard() {
+        }
+
+        public static ScopeGuard setIfNotExists(ConnectContext session) {
+            ScopeGuard res = new ScopeGuard();
+            res.set = session.setThreadLocalInfoIfNotExists();
+            return res;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (set) {
+                ConnectContext.remove();
+            }
+        }
+    }
+
 
 }

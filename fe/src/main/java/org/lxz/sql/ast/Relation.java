@@ -21,4 +21,22 @@ public abstract class Relation implements ParseNode {
     public void setAlias(TableName alias) {
         this.alias = alias;
     }
+
+    public TableName getResolveTableName() {
+        return alias;
+    }
+
+
+    public void setScope(Scope scope) {
+        this.scope = scope;
+    }
+
+
+    public List<String> getColumnOutputNames() {
+        return explicitColumnNames;
+    }
+
+    public Scope getScope() {
+        return scope;
+    }
 }

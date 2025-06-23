@@ -1,12 +1,15 @@
 package org.lxz.catalog;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.SerializedName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Table implements BasicTable {
@@ -68,8 +71,16 @@ public class Table implements BasicTable {
 
     protected static Map<String, Map<PartitionKey, Long>> tblToPartitionKey = Maps.newHashMap();
 
+    public List<Column> getFullSchema() {
+        return fullSchema;
+    }
 
-
+    // should override in subclass if necessary
+    // full schema may have mv column ?
+    // visiable
+    public List<Column> getBaseSchema() {
+        return fullSchema;
+    }
 
     @Override
     public String getCatalogName() {
@@ -124,5 +135,17 @@ public class Table implements BasicTable {
     @Override
     public long getLastCheckTime() {
         return 0;
+    }
+
+    public Set<String> getDistributionColumnNames() {
+        return Collections.emptySet();
+    }
+
+    public List<String> getPartitionColumnNames() {
+        return Lists.newArrayList();
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

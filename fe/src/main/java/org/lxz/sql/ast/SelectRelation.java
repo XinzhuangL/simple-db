@@ -135,8 +135,31 @@ public class SelectRelation extends QueryRelation {
     }
 
     public void fillResolvedAST(AnalyzeState analyzesState) {
+        this.outputExpr = analyzesState.getOutputExpressions();
+        // this.predicate = analyzesState.getPredicate();
+        this.columnReferences = analyzesState.getColumnReferences();
+        this.setScope(analyzesState.getOutputScope());
 
     }
 
+    public Relation getRelation() {
+        return relation;
+    }
 
+    public void setRelation(Relation relation) {
+        this.relation = relation;
+    }
+
+    public SelectList getSelectList() {
+        return selectList;
+    }
+
+    public List<Expr> getOutputExpr() {
+        return outputExpr;
+    }
+
+    @Override
+    public <R, C> R accept(AstVisitor<R, C> visitor, C context) {
+        return visitor.visitSelect(this, context);
+    }
 }

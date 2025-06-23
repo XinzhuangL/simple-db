@@ -29,5 +29,31 @@ public class TableName {
         this.tbl = tbl;
     }
 
+    public String getCatalog() {
+        return catalog;
+    }
 
+    public void setCatalog(String catalog) {
+        this.catalog = catalog;
+    }
+
+    public String getTbl() {
+        return tbl;
+    }
+
+    public void setTbl(String tbl) {
+        this.tbl = tbl;
+    }
+
+    public String getDb() {
+        return db;
+    }
+
+    public void setDb(String db) {
+        this.db = db;
+    }
+
+    public NodePosition getPos() {
+        return pos;
+    }
 }

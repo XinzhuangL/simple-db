@@ -1,5 +1,6 @@
 package org.lxz.catalog;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import org.lxz.analysis.Expr;
 
@@ -75,7 +76,33 @@ public class Column {
 
     // todo ColumnIdExpr
 
+    public String getName() {
+        return name;
+    }
 
+    public boolean isGeneratedColumn() {
+        return false;
+    }
 
+    public boolean isKey() {
+        return isKey;
+    }
+
+    public boolean isAllowNull() {
+        return isAllowNull;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Column(String name, Type dataType) {
+        this.name = name;
+        if (this.name == null) {
+            this.name = "";
+        }
+        this.columnId = ColumnId.create(this.name);
+        this.type = dataType;
+    }
 
 }
